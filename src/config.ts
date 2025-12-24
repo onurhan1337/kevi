@@ -13,6 +13,7 @@ export const registry: KeviRegistry = {
     role: "admin",
     prefix: "dev",
     description: "Main development key with 'dev:' prefixing.",
+    allowedOrigins: ["http://localhost:8787", "http://localhost:3000"],
   },
 
   // Read-only key with no prefix
