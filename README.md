@@ -8,13 +8,10 @@ Kevi is a high-performance, multi-tenant configuration and metadata store built 
 
 The project follows a modular middleware-based architecture:
 
-- **src/middleware/auth.ts**: Handles RBAC logic and Origin enforcement.
-- **src/middleware/init.ts**: Manages global context, service lookup, and CORS.
+- **src/middleware/**: Custom auth and initialization logic.
 - **src/routes/kv.ts**: Core CRUD logic for Key-Value operations.
-- **src/test/**: Integration tests and environment mocks.
-- **src/types/**: Centralized TypeScript interface definitions.
-- **src/config.ts**: Service registry where tokens and permissions are defined.
-- **src/index.ts**: Application entry point and route orchestration.
+- **src/config.ts**: The "Brain" of the project where you define your services.
+- **src/test/**: Pre-configured integration tests to ensure your changes don't break the API.
 
 ## Tech Stack
 
@@ -32,24 +29,28 @@ The following diagram illustrates the request lifecycle, from token validation t
 
 ## Infrastructure Setup
 
-### 1. KV Namespaces
+Kevi is designed to be a stand-alone tool that you can host on your own Cloudflare account. Following the [official Cloudflare Workers KV guide](https://hono.dev/docs/getting-started/cloudflare-workers#cloudflare-workers), follow these steps to set up your environment:
 
-Before deployment, you must create and bind your KV namespaces in `wrangler.jsonc`. Ensure the `binding` names match those used in `src/config.ts`.
+### 1. Login to Cloudflare
 
-```json
-"kv_namespaces": [
-  {
-    "binding": "KEVI_STORAGE",
-    "id": "your-kv-namespace-id"
-  },
-  {
-    "binding": "TEST_STORAGE",
-    "id": "your-test-kv-id"
-  }
-]
+If you haven't logged in yet, authenticate your terminal with Wrangler:
+
+```bash
+bunx wrangler login
 ```
 
-### 2. Global Security Token
+### 2. Create KV Namespaces
+
+Create your storage buckets using the command below. Wrangler will ask if you want to add the ID to your configuration file automatically; you can simply say "Yes":
+
+```bash
+# Create production storage
+bunx wrangler kv namespace create KEVI_STORAGE
+```
+
+> Note: If you skip the automatic setup, you must manually copy the IDs into your wrangler.jsonc file.
+
+### 3. Global Security Token
 
 Generate a secure global `API_TOKEN` to protect your endpoint. You can generate one using the following command:
 
@@ -63,6 +64,14 @@ Add the generated token to the `vars` section of your `wrangler.jsonc`:
 "vars": {
   "API_TOKEN": "your-generated-base64-token"
 }
+```
+
+### 4. Sync Types
+
+After your KV namespaces are bound, run the type generator to enable smart autocomplete for your storage names in src/config.ts:
+
+```bash
+bun run cf-typegen
 ```
 
 ## Configuration
@@ -133,3 +142,7 @@ curl [https://kevi.your-subdomain.workers.dev/v1/kv/settings](https://kevi.your-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Donate
+
+[Support me](https://buymeacoffee.com/onurhan)
