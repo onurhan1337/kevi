@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { registry } from "../config";
+import { authorize } from "../middleware/auth";
 import { ServiceDefinition } from "../types/config";
 
 type Variables = {
@@ -14,53 +15,79 @@ const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 const keySchema = zValidator(
   "param",
-  z.object({ key: z.string().min(3).max(512) }),
+  z.object({
+    key: z
+      .string()
+      .min(3)
+      .max(512)
+      .regex(/^[a-zA-Z0-9._-]+$/)
+      .optional(),
+  }),
 );
-const bodySchema = zValidator("json", z.object({ value: z.any() }));
 
-app.use("/:key", async (c, next) => {
-  const apiKey = c.req.param("apiKey") as keyof typeof registry;
-  const service = registry[apiKey];
+const kvBodySchema = zValidator(
+  "json",
+  z.object({
+    value: z.any(),
+    metadata: z.record(z.any()).optional(),
+    ttl: z.number().positive().optional(),
+  }),
+);
+
+app.use("*", async (c, next) => {
+  const token = c.req.header("X-Kevi-Token") as keyof typeof registry;
+  const service = registry[token];
 
   if (!service) return c.json({ error: "Unauthorized" }, 401);
 
-  const key = c.req.param("key");
-  const storageKey = service.storage as keyof Env;
-
+  const key = c.req.param("key") || "";
   c.set("service", service);
-  c.set("kv", c.env[storageKey] as KVNamespace);
+  c.set("kv", c.env[service.storage as keyof Env] as KVNamespace);
   c.set("finalKey", service.prefix ? `${service.prefix}:${key}` : key);
 
   await next();
 });
 
-app.get("/:key", keySchema, async (c) => {
-  const value = await c.get("kv").get(c.get("finalKey"));
-  if (!value) return c.json({ error: "Not Found" }, 404);
+app.get("/", async (c) => {
+  const list = await c.get("kv").list({
+    prefix: c.get("service").prefix ? `${c.get("service").prefix}:` : undefined,
+    limit: Number(c.req.query("limit")) || 100,
+    cursor: c.req.query("cursor"),
+  });
 
-  try {
-    return c.json({ status: "ok", data: JSON.parse(value) });
-  } catch {
-    return c.json({ status: "ok", data: value });
-  }
+  return c.json({
+    status: "ok",
+    keys: list.keys.map((k) => ({
+      name: c.get("service").prefix
+        ? k.name.replace(`${c.get("service").prefix}:`, "")
+        : k.name,
+      metadata: k.metadata,
+    })),
+    cursor: "cursor" in list ? list.cursor : undefined,
+    list_complete: list.list_complete,
+  });
 });
 
-app.post("/:key", keySchema, bodySchema, async (c) => {
-  if (c.get("service").role === "read-only")
-    return c.json({ error: "Forbidden" }, 403);
+app.get("/:key", keySchema, async (c) => {
+  const { value, metadata } = await c
+    .get("kv")
+    .getWithMetadata(c.get("finalKey"));
+  if (!value) return c.json({ error: "Not Found" }, 404);
+  return c.json({ status: "ok", data: value, metadata: metadata || {} });
+});
 
-  const { value } = c.req.valid("json");
-  const data =
-    typeof value === "object" ? JSON.stringify(value) : String(value);
-
-  await c.get("kv").put(c.get("finalKey"), data);
+app.post("/:key", authorize("admin"), keySchema, kvBodySchema, async (c) => {
+  const { value, metadata, ttl } = c.req.valid("json");
+  await c
+    .get("kv")
+    .put(c.get("finalKey"), JSON.stringify(value), {
+      metadata,
+      expirationTtl: ttl,
+    });
   return c.json({ status: "ok" });
 });
 
-app.delete("/:key", keySchema, async (c) => {
-  if (c.get("service").role === "read-only")
-    return c.json({ error: "Forbidden" }, 403);
-
+app.delete("/:key", authorize("admin"), keySchema, async (c) => {
   await c.get("kv").delete(c.get("finalKey"));
   return c.json({ status: "ok" });
 });
