@@ -1,11 +1,17 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 import kvRoute from "./routes/kv";
+import { initApp } from "./middleware/init";
+import { ServiceDefinition } from "./types/config";
+
+type Variables = {
+  service: ServiceDefinition;
+};
 
 /**
- * Enterprise middleware patterns for future scaling:
- * https://hono.dev/docs/middleware/builtin/combine#usage
- * * Example:
+ * @description Enterprise middleware patterns for future scaling:
+ * @tutorial https://hono.dev/docs/middleware/builtin/combine#usage
+ * * @example:
  * app.use('/v1/*', some(
  * every(
  * ipRestriction(getConnInfo, { allowList: ['192.168.0.2'] }),
@@ -14,19 +20,12 @@ import kvRoute from "./routes/kv";
  * rateLimit()
  * ))
  */
+const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
-const app = new Hono<{ Bindings: Env }>();
+app.use("*", logger());
 
-app.use("*", async (c, next) => {
-  const apiToken = c.req.header("X-Kevi-Token");
+app.use("*", initApp);
 
-  if (c.env.API_TOKEN && apiToken !== c.env.API_TOKEN) {
-    return c.json({ error: "Forbidden" }, 403);
-  }
-
-  return await cors()(c, next);
-});
-
-app.route("/v1/:apiKey", kvRoute);
+app.route("/v1/kv", kvRoute);
 
 export default app;
