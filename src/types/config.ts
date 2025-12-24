@@ -36,6 +36,12 @@ export interface ServiceDefinition {
    * Description of the service usage for internal documentation.
    */
   readonly description?: string;
+  /**
+   * List of allowed origins for CORS.
+   * Use ["*"] for public access.
+   * @example ["https://admin.kevi.com", "http://localhost:3000"]
+   */
+  readonly allowedOrigins?: readonly string[];
 }
 
 /**
