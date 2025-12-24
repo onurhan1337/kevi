@@ -8,13 +8,18 @@
       "binding": "KEVI_STORAGE",
       "id": "", // Add your KV namespace ID here
     },
+    {
+      "binding": "TEST_STORAGE",
+      "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    },
   ],
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
+  // Create your own API_TOKEN with "openssl rand -base64 32" command
+  "vars": {
+    "API_TOKEN": "",
+  },
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",
