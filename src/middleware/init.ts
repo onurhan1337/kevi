@@ -15,7 +15,8 @@ function resolveTokenToServiceId(
   token: string,
   env: Env
 ): ServiceName<typeof registry> | undefined {
-  const tokenKey = `TOKEN_${token}` as keyof Env;
+  const normalizedToken = token.startsWith("TOKEN_") ? token : `TOKEN_${token}`;
+  const tokenKey = normalizedToken as keyof Env;
   const serviceId = env[tokenKey];
 
   if (typeof serviceId === "string" && serviceId in registry) {

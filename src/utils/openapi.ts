@@ -6,7 +6,7 @@ export function generateOpenAPISpec() {
       version: "1.0.0",
       description: `# Kevi API Documentation
 
-Edge-native dynamic configuration store with identity-first architecture, role-based access control, and automatic key prefixing.
+Multi-tenant edge-native key-value API with identity-first architecture, role-based access control, and automatic key prefixing.
 
 ## Identity-First Architecture
 
