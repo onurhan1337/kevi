@@ -8,6 +8,11 @@ type Variables = {
 export const authorize = (requiredRole: AccessRole) => {
   return async (c: Context<{ Variables: Variables }>, next: Next) => {
     const service = c.get("service");
+
+    if (!service) {
+      return c.json({ error: "Unauthorized: Service not identified" }, 401);
+    }
+
     const requestOrigin = c.req.header("Origin");
 
     if (service.allowedOrigins && !service.allowedOrigins.includes("*")) {
