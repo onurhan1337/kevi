@@ -2,10 +2,12 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import kvRoute from "./routes/kv";
 import { initApp } from "./middleware/init";
-import { ServiceDefinition } from "./types/config";
+import { ServiceDefinition, ServiceName } from "./types/config";
+import { registry } from "./config";
 
 type Variables = {
   service: ServiceDefinition;
+  serviceId: ServiceName<typeof registry>;
 };
 
 /**
