@@ -75,12 +75,14 @@ app.get("/", async (c) => {
     cursor: c.req.query("cursor"),
   });
 
-  const keys = list.keys.map((k) => ({
-    name: service.prefix
-      ? k.name.replace(new RegExp(`^${service.prefix}:`), "")
-      : k.name,
-    metadata: k.metadata || {},
-  }));
+  const keys = list.keys.map(
+    (k: KVNamespaceListKey<Record<string, unknown>, string>) => ({
+      name: service.prefix
+        ? k.name.replace(new RegExp(`^${service.prefix}:`), "")
+        : k.name,
+      metadata: k.metadata || {},
+    })
+  );
 
   return c.json({
     status: "ok",
