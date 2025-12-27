@@ -19,6 +19,7 @@ Kevi is a high-performance, multi-tenant configuration and metadata store built 
 ## Quick Start
 
 1. **Install dependencies**:
+
    ```bash
    bun install
    ```
@@ -26,11 +27,13 @@ Kevi is a high-performance, multi-tenant configuration and metadata store built 
 2. **Set up KV namespaces** (see [Infrastructure Setup](#infrastructure-setup))
 
 3. **Generate a service token**:
+
    ```bash
    bun gen:service -s your-service-name
    ```
 
 4. **Start development server**:
+
    ```bash
    bun run dev
    ```
@@ -44,6 +47,7 @@ Kevi is a high-performance, multi-tenant configuration and metadata store built 
 Kevi includes comprehensive documentation covering architecture, configuration, and usage:
 
 - **[Architecture Guide](./docs/ARCHITECTURE.md)**: Deep dive into request flow, middleware layers, security model, and performance optimizations
+- **[Architecture Diagrams](./docs/ARCHITECTURE_DIAGRAM.md)**: Visual Mermaid diagrams showing system architecture, request flow, project structure, and Cloudflare integration
 - **[Configuration Guide](./docs/CONFIGURATION.md)**: Complete guide to service registry, token mapping, and environment variables
 - **[Public Keys Guide](./docs/PUBLIC_KEYS.md)**: Understanding public key patterns, exact matches, wildcards, and security considerations
 
@@ -55,6 +59,7 @@ Kevi provides interactive API documentation powered by [Scalar](https://scalar.c
 - **Production**: https://kevi.your-subdomain.workers.dev/docs
 
 The Scalar UI includes:
+
 - Interactive API testing with authentication
 - Complete endpoint documentation with examples
 - Security scheme configuration for `X-Kevi-Token`
@@ -64,11 +69,13 @@ The Scalar UI includes:
 ### Health Check
 
 Check API health status:
+
 ```bash
 curl http://localhost:8787/health
 ```
 
 Response:
+
 ```json
 {
   "status": "ok",
@@ -103,7 +110,7 @@ The project follows a modular middleware-based architecture:
 
 The following diagram illustrates the request lifecycle, from token validation to KV interaction:
 
-![Kevi Workflow](mermaid.png)
+See **[Architecture Diagrams](./docs/ARCHITECTURE_DIAGRAM.md)** for comprehensive visual documentation including request flow, system architecture, and component interactions.
 
 ## Infrastructure Setup
 
