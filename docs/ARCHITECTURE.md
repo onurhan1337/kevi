@@ -69,7 +69,7 @@ sequenceDiagram
     participant Registry as Service Registry
     participant KV as Cloudflare KV
 
-    Client->>Kevi: GET /v1/kv/settings<br/>X-Kevi-Token: abc123...
+    Client->>Kevi: GET /v1/kv/settings<br/>X-Kevi-Token: TOKEN_abc123...
 
     Kevi->>Kevi: Resolve Token<br/>TOKEN_abc123... → "dev-service"
 
