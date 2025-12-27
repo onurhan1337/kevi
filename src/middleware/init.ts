@@ -13,8 +13,9 @@ type Variables = {
 
 function resolveTokenToServiceId(
   token: string,
-  env: Env
+  env: Partial<Env>
 ): ServiceName<typeof registry> | undefined {
+  if (!env) return undefined;
   const tokenKey = `TOKEN_${token}` as keyof Env;
   const serviceId = env[tokenKey];
 
@@ -26,10 +27,10 @@ function resolveTokenToServiceId(
 }
 
 export const initApp = async (
-  c: Context<{ Bindings: Env; Variables: Variables }>,
+  c: Context<{ Bindings: Partial<Env>; Variables: Variables }>,
   next: Next
 ) => {
-  if (!("KEVI_STORAGE" in c.env)) {
+  if (!c.env || !("KEVI_STORAGE" in c.env)) {
     return c.json(
       {
         error: "Not Supported",
