@@ -16,10 +16,19 @@ const keySchema = zValidator(
 const kvBodySchema = zValidator(
   "json",
   z.object({
-    value: z.any(),
-    metadata: z.record(z.any()).optional(),
+    value: z.unknown(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
     ttl: z.number().positive().optional(),
   })
 );
 
-export { keySchema, kvBodySchema };
+const serviceNameSchema = z
+  .string()
+  .min(3, "Service name must be at least 3 characters long")
+  .max(30, "Service name must be at most 30 characters long")
+  .regex(
+    /^[a-z0-9-]+$/,
+    "Service name can only contain lowercase letters, numbers, and hyphens (-)"
+  );
+
+export { keySchema, kvBodySchema, serviceNameSchema };

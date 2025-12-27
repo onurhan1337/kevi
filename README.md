@@ -58,12 +58,65 @@ Generate a secure global `API_TOKEN` to protect your endpoint. You can generate 
 openssl rand -base64 32
 ```
 
-Add the generated token to the `vars` section of your `wrangler.jsonc`:
+### Creating a New Service
 
-```json
+Kevi uses a service-based authentication model. To maintain consistency and security, use the built-in generator to create a new service.
+
+### Run the Generator
+
+The generator validates the service name using Zod to ensure it is URL-friendly and generates a secure 32-byte token.
+
+```bash
+# Using Bun
+bun gen:service -s your-service-name
+
+# Using NPM
+npm run gen:service -s your-service-name
+```
+
+### Service Name Rules
+
+To pass the validation, your service name must:
+
+- Be between 3 and 30 characters long.
+- Contain only lowercase letters, numbers, and hyphens (-).
+- Not contain special characters or spaces.
+
+### Manual Integration
+
+After running the command, follow the instructions in your terminal:
+
+- Environment: Add the TOKEN\_... line to your wrangler.jsonc file under vars.
+- Configuration: Copy the service definition into src/config.ts.
+- Authentication: Use the provided raw token in your application's X-Kevi-Token header.
+
+### Global Admin Token (Master Key)
+
+The `API_TOKEN` acts as a master key. It bypasses service isolation and provides full access to the underlying KV storage (useful for maintenance or global dashboards).
+
+Setup:
+
+- Generate a secure token:
+
+```bash
+openssl rand -base64 32
+```
+
+- Add it to your `wrangler.jsonc`:
+
+```bash
 "vars": {
-  "API_TOKEN": "your-generated-base64-token"
+  "API_TOKEN": "your-master-admin-token"
 }
+```
+
+### How to use in Requests
+
+All requests must include the token in the `X-Kevi-Token` header:
+
+```bash
+curl http://localhost:8787/v1/kv/my-key \
+  -H "X-Kevi-Token: <SERVICE_OR_ADMIN_TOKEN>"
 ```
 
 ### 4. Sync Types
