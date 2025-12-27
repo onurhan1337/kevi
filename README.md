@@ -1,8 +1,8 @@
 # Kevi 🫆
 
-**Edge-native dynamic configuration store**
+**Multi-tenant edge-native key-value API with identity-first architecture**
 
-Kevi is a high-performance, multi-tenant configuration and metadata store built on Cloudflare Workers and KV. It provides a secure API layer to manage dynamic configurations with built-in role-based access control (RBAC), origin validation, and automatic key prefixing.
+Kevi is a high-performance, multi-tenant key-value store built on Cloudflare Workers and KV. It provides a secure, identity-first API layer for managing dynamic configurations with built-in service isolation, role-based access control (RBAC), origin validation, and automatic key prefixing.
 
 ## Table of Contents
 
@@ -46,8 +46,7 @@ Kevi is a high-performance, multi-tenant configuration and metadata store built 
 
 Kevi includes comprehensive documentation covering architecture, configuration, and usage:
 
-- **[Architecture Guide](./docs/ARCHITECTURE.md)**: Deep dive into request flow, middleware layers, security model, and performance optimizations
-- **[Architecture Diagrams](./docs/ARCHITECTURE_DIAGRAM.md)**: Visual Mermaid diagrams showing system architecture, request flow, project structure, and Cloudflare integration
+- **[Architecture Guide](./docs/ARCHITECTURE.md)**: Complete architecture documentation with visual diagrams, request flow, middleware layers, security model, and performance optimizations
 - **[Configuration Guide](./docs/CONFIGURATION.md)**: Complete guide to service registry, token mapping, and environment variables
 - **[Public Keys Guide](./docs/PUBLIC_KEYS.md)**: Understanding public key patterns, exact matches, wildcards, and security considerations
 
@@ -108,9 +107,7 @@ The project follows a modular middleware-based architecture:
 
 ## Workflow
 
-The following diagram illustrates the request lifecycle, from token validation to KV interaction:
-
-See **[Architecture Diagrams](./docs/ARCHITECTURE_DIAGRAM.md)** for comprehensive visual documentation including request flow, system architecture, and component interactions.
+See **[Architecture Guide](./docs/ARCHITECTURE.md)** for comprehensive visual documentation including request flow, system architecture, and component interactions.
 
 ## Infrastructure Setup
 
@@ -137,7 +134,13 @@ bunx wrangler kv namespace create KEVI_STORAGE
 
 ### 3. Global Security Token
 
-Generate a secure global `API_TOKEN` to protect your endpoint. You can generate one using the following command:
+Generate a secure global `API_TOKEN` to protect your endpoint. Use the service generator script:
+
+```bash
+bun gen:service -s admin
+```
+
+This will generate a token that you can use as your `API_TOKEN`. Alternatively, you can generate one manually:
 
 ```bash
 openssl rand -base64 32
