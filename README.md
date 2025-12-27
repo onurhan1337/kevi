@@ -39,8 +39,8 @@ Kevi is a high-performance, multi-tenant configuration and metadata store built 
    ```
 
 5. **Access API documentation**:
-   - OpenAPI Spec: http://localhost:8787/openapi.json
-   - Scalar UI: http://localhost:8787/docs
+   - OpenAPI Spec: https://kevi.onurhandtr.workers.dev/openapi.json
+   - Scalar UI: https://kevi.onurhandtr.workers.dev/
 
 ## Documentation
 
@@ -55,8 +55,8 @@ Kevi includes comprehensive documentation covering architecture, configuration, 
 
 Kevi provides interactive API documentation powered by [Scalar](https://scalar.com):
 
-- **Local Development**: http://localhost:8787/docs
-- **Production**: https://kevi.your-subdomain.workers.dev/docs
+- **Local Development**: http://localhost:8787/
+- **Production**: https://kevi.onurhandtr.workers.dev/
 
 The Scalar UI includes:
 
@@ -274,7 +274,7 @@ bun run deploy
 ### Set a Configuration
 
 ```bash
-curl -X POST [https://kevi.your-subdomain.workers.dev/v1/kv/settings](https://kevi.your-subdomain.workers.dev/v1/kv/settings) \
+curl -X POST https://kevi.onurhandtr.workers.dev/v1/kv/settings \
   -H "X-Kevi-Token: your-token" \
   -H "Content-Type: application/json" \
   -d '{"value": {"maintenance": false, "version": "1.0.4"}}'
@@ -283,7 +283,7 @@ curl -X POST [https://kevi.your-subdomain.workers.dev/v1/kv/settings](https://ke
 ### Get a Configuration
 
 ```bash
-curl [https://kevi.your-subdomain.workers.dev/v1/kv/settings](https://kevi.your-subdomain.workers.dev/v1/kv/settings) \
+curl https://kevi.onurhandtr.workers.dev/v1/kv/settings \
   -H "X-Kevi-Token: your-token"
 ```
 

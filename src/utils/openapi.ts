@@ -213,7 +213,7 @@ Write operations (POST, DELETE) always require the admin role, regardless of pub
     },
     servers: [
       {
-        url: "https://kevi.your-subdomain.workers.dev",
+        url: "https://kevi.onurhandtr.workers.dev",
         description: "Production server",
       },
       {

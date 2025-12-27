@@ -30,7 +30,7 @@ app.get("/openapi.json", (c) => {
 });
 
 app.get(
-  "/docs",
+  "/",
   Scalar({
     url: "/openapi.json",
     theme: "default",
