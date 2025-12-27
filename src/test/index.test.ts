@@ -12,7 +12,7 @@ describe("Kevi Integration Tests", () => {
           Origin: ALLOWED_ORIGIN,
         },
       },
-      mockEnv as any,
+      mockEnv,
     );
 
     expect(res.status).toBe(200);
@@ -30,7 +30,7 @@ describe("Kevi Integration Tests", () => {
         },
         body: JSON.stringify({ value: "data" }),
       },
-      mockEnv as any,
+      mockEnv,
     );
 
     expect(res.status).toBe(403);
@@ -48,7 +48,7 @@ describe("Kevi Integration Tests", () => {
         },
         body: JSON.stringify({ value: "<script>alert(1)</script>" }),
       },
-      mockEnv as any,
+      mockEnv,
     );
 
     if (res.status !== 200) {
