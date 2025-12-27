@@ -2,6 +2,8 @@ import { Context, Next } from "hono";
 import { cors } from "hono/cors";
 import { registry } from "../config";
 import { ServiceDefinition, ServiceName } from "../types/config";
+import { isGetMethod } from "../types/http";
+import { isPublicKey } from "../utils/public-key";
 
 type Variables = {
   service: ServiceDefinition;
@@ -83,14 +85,26 @@ export const initApp = async (
   c.set("service", serviceDefinition);
   c.set("serviceId", serviceId);
 
-  const origins = serviceDefinition.allowedOrigins
-    ? [...serviceDefinition.allowedOrigins]
-    : ["*"];
+  const rawKey = c.req.param("key") || "";
+  const method = c.req.method;
+  const isGetRequest = isGetMethod(method);
+  const isPublic = isPublicKey(rawKey, serviceId, serviceDefinition.publicKeys);
+
+  let origins: readonly string[];
+
+  if (isGetRequest && isPublic) {
+    origins = ["*"];
+  } else {
+    origins = serviceDefinition.allowedOrigins || ["*"];
+  }
+
+  const originsSet = new Set(origins);
+  const firstOrigin = origins[0];
 
   const corsHandler = cors({
     origin: (origin) => {
-      if (origins.includes("*")) return "*";
-      return origins.includes(origin) ? origin : origins[0];
+      if (originsSet.has("*")) return "*";
+      return originsSet.has(origin || "") ? origin : firstOrigin;
     },
     allowMethods: ["GET", "POST", "DELETE", "OPTIONS"],
     allowHeaders: ["X-Kevi-Token", "Content-Type"],
