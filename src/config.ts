@@ -30,10 +30,11 @@ export const registry: ServiceRegistry = {
    */
   "dev-service": {
     storage: "TEST_STORAGE",
-    role: "read-only",
+    role: "admin",
     prefix: "dev",
     description:
       "Main development service with 'dev:' prefixing for key isolation.",
     allowedOrigins: ["http://localhost:8787", "http://localhost:3000"],
+    publicKeys: ["public/*"],
   },
 } as const;

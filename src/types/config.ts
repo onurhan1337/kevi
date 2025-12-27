@@ -46,15 +46,22 @@ export interface ServiceDefinition {
    * @example ["https://admin.kevi.com", "http://localhost:3000"]
    */
   readonly allowedOrigins?: readonly string[];
+  /**
+   * List of public keys that can be accessed from any origin via GET requests.
+   * Supports wildcard patterns using * suffix (e.g., "public/*").
+   * Write operations (POST, PUT, DELETE) always require strict origin and role checks.
+   * @example ["public/settings", "public/*"]
+   */
+  readonly publicKeys?: readonly string[];
 }
 
 /**
  * ServiceRegistry: Map of Service Names to their Service Definitions.
  * This is the Logic & Policy Layer where each service-name maps to operational rules.
- * 
+ *
  * The Service Name is resolved from the Identity Mapping Layer (vars.SERVICE_TOKENS)
  * and must be a valid key in this registry for type safety.
- * 
+ *
  * @example
  * {
  *   "service-a": { storage: "KEVI_STORAGE", role: "admin", prefix: "service_a" },
