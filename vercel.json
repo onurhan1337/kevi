@@ -1,9 +1,27 @@
 {
   "version": 2,
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "framework": null,
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/src/vercel.ts"
+      "source": "/",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/openapi.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
     }
   ]
 }
