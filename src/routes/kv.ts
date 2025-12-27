@@ -3,18 +3,13 @@ import { keySchema, kvBodySchema } from "../schemas";
 import { authorize } from "../middleware/auth";
 import { ServiceDefinition, ServiceName } from "../types/config";
 import { registry } from "../config";
+import { Env } from "../types/env";
 
 type Variables = {
   service: ServiceDefinition;
   serviceId: ServiceName<typeof registry>;
 };
-
-type EnvWithTokens = Env & {
-  API_TOKEN?: string;
-  [key: `TOKEN_${string}`]: string | undefined;
-};
-
-const app = new Hono<{ Bindings: EnvWithTokens; Variables: Variables }>();
+const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 /**
  * Resolved KV context with type safety.
@@ -42,7 +37,7 @@ type ResolvedKV = {
  * @throws Error if service is not resolved in context
  */
 const getResolvedKV = (
-  c: Context<{ Bindings: EnvWithTokens; Variables: Variables }>
+  c: Context<{ Bindings: Env; Variables: Variables }>
 ): ResolvedKV => {
   const service = c.get("service");
   const serviceId = c.get("serviceId");
@@ -51,9 +46,8 @@ const getResolvedKV = (
     throw new Error("Service not resolved in context");
   }
 
-  // Get the KV namespace binding from environment
-  // Type-safe access: service.storage is typed as KVStorageName
-  const kv = c.env[service.storage] as KVNamespace;
+  const storageKey = service.storage as keyof Env;
+  const kv = c.env[storageKey] as KVNamespace;
 
   if (!kv) {
     throw new Error(

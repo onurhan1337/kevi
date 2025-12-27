@@ -1,13 +1,7 @@
-/**
- * Utility: Forces TypeScript to expand complex types in IDE tooltips.
- */
+import { Env } from "./env";
+
 type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
-/**
- * Filtered Storage Names:
- * This logic iterates through 'Env' and only picks keys that are actual KVNamespaces.
- * It automatically filters out strings like 'API_TOKEN' or 'SERVICE_TOKENS'.
- */
 export type KVStorageName = {
   [K in keyof Env]: Env[K] extends KVNamespace ? K : never;
 }[keyof Env];

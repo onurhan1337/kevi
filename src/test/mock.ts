@@ -1,4 +1,6 @@
-export const ADMIN_TOKEN = "mdK+p90/Y2YVMHgngYotAYJMUFTPpKE6/DseCZeB4os="; // mock generated token
+import { Env } from "../types/env";
+
+export const ADMIN_TOKEN = "mdK+p90/Y2YVMHgngYotAYJMUFTPpKE6/DseCZeB4os=";
 export const ALLOWED_ORIGIN = "http://localhost:3000";
 
 const mockKV: KVNamespace = {
@@ -32,10 +34,7 @@ const mockKV: KVNamespace = {
   }),
 } as unknown as KVNamespace;
 
-export const mockEnv: Env & {
-  API_TOKEN?: string;
-  [key: `TOKEN_${string}`]: string | undefined;
-} = {
+export const mockEnv: Env = {
   KEVI_STORAGE: mockKV,
   TEST_STORAGE: mockKV,
   [`TOKEN_${ADMIN_TOKEN}`]: "dev-service",

@@ -4,6 +4,7 @@ import { registry } from "../config";
 import { ServiceDefinition, ServiceName } from "../types/config";
 import { isGetMethod } from "../types/http";
 import { isPublicKey } from "../utils/public-key";
+import { Env } from "../types/env";
 
 type Variables = {
   service: ServiceDefinition;

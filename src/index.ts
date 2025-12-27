@@ -6,6 +6,7 @@ import { initApp } from "./middleware/init";
 import { ServiceDefinition, ServiceName } from "./types/config";
 import { registry } from "./config";
 import { generateOpenAPISpec } from "./utils/openapi";
+import { Env } from "./types/env";
 
 type Variables = {
   service: ServiceDefinition;
