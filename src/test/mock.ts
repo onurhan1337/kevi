@@ -1,4 +1,4 @@
-export const ADMIN_TOKEN = "mdK+p90/Y2YVMHgngYotAYJMUFTPpKE6/DseCZeB4os=";
+export const ADMIN_TOKEN = "mdK+p90/Y2YVMHgngYotAYJMUFTPpKE6/DseCZeB4os="; // mock generated token
 export const ALLOWED_ORIGIN = "http://localhost:3000";
 
 const mockKV: KVNamespace = {
