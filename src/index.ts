@@ -39,7 +39,6 @@ app.get(
 );
 
 app.use("/v1/*", initApp);
-
 app.route("/v1/kv", kvRoute);
 
 export default app;

@@ -29,6 +29,17 @@ export const initApp = async (
   c: Context<{ Bindings: Env; Variables: Variables }>,
   next: Next
 ) => {
+  if (!("KEVI_STORAGE" in c.env)) {
+    return c.json(
+      {
+        error: "Not Supported",
+        message:
+          "KV operations are only available on Cloudflare Workers runtime. This deployment is for documentation only.",
+      },
+      503
+    );
+  }
+
   const token = c.req.header("X-Kevi-Token");
 
   if (!token) {
