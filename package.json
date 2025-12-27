@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.6",
+    "@scalar/hono-api-reference": "^0.9.30",
     "hono": "^4.11.1"
   },
   "devDependencies": {

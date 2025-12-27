@@ -4,14 +4,92 @@
 
 Kevi is a high-performance, multi-tenant configuration and metadata store built on Cloudflare Workers and KV. It provides a secure API layer to manage dynamic configurations with built-in role-based access control (RBAC), origin validation, and automatic key prefixing.
 
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+  - [Architecture Guide](./docs/ARCHITECTURE.md) - Complete request flow and component breakdown
+  - [Configuration Guide](./docs/CONFIGURATION.md) - Service registry and environment variables
+  - [Public Keys Guide](./docs/PUBLIC_KEYS.md) - Public key patterns and examples
+- [API Documentation](#api-documentation)
+- [Infrastructure Setup](#infrastructure-setup)
+- [Getting Started](#getting-started)
+- [API Usage](#api-usage)
+
+## Quick Start
+
+1. **Install dependencies**:
+   ```bash
+   bun install
+   ```
+
+2. **Set up KV namespaces** (see [Infrastructure Setup](#infrastructure-setup))
+
+3. **Generate a service token**:
+   ```bash
+   bun gen:service -s your-service-name
+   ```
+
+4. **Start development server**:
+   ```bash
+   bun run dev
+   ```
+
+5. **Access API documentation**:
+   - OpenAPI Spec: http://localhost:8787/openapi.json
+   - Scalar UI: http://localhost:8787/docs
+
+## Documentation
+
+Kevi includes comprehensive documentation covering architecture, configuration, and usage:
+
+- **[Architecture Guide](./docs/ARCHITECTURE.md)**: Deep dive into request flow, middleware layers, security model, and performance optimizations
+- **[Configuration Guide](./docs/CONFIGURATION.md)**: Complete guide to service registry, token mapping, and environment variables
+- **[Public Keys Guide](./docs/PUBLIC_KEYS.md)**: Understanding public key patterns, exact matches, wildcards, and security considerations
+
+## API Documentation
+
+Kevi provides interactive API documentation powered by [Scalar](https://scalar.com):
+
+- **Local Development**: http://localhost:8787/docs
+- **Production**: https://kevi.your-subdomain.workers.dev/docs
+
+The Scalar UI includes:
+- Interactive API testing with authentication
+- Complete endpoint documentation with examples
+- Security scheme configuration for `X-Kevi-Token`
+- Request/response schemas
+- Guide sections explaining identity-first architecture and security
+
+### Health Check
+
+Check API health status:
+```bash
+curl http://localhost:8787/health
+```
+
+Response:
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "version": "1.0.0"
+}
+```
+
 ## Project Structure
 
 The project follows a modular middleware-based architecture:
 
-- **src/middleware/**: Custom auth and initialization logic.
-- **src/routes/kv.ts**: Core CRUD logic for Key-Value operations.
-- **src/config.ts**: The "Brain" of the project where you define your services.
-- **src/test/**: Pre-configured integration tests to ensure your changes don't break the API.
+- **src/middleware/**: Custom auth and initialization logic
+  - `init.ts`: Token resolution, service mapping, CORS policy
+  - `auth.ts`: Role-based access control and origin validation
+- **src/routes/kv.ts**: Core CRUD logic for Key-Value operations
+- **src/config.ts**: Service registry - operational rules for each service
+- **src/utils/**: Utility functions
+  - `public-key.ts`: Memoized pattern matching for public keys
+  - `openapi.ts`: OpenAPI specification generator
+- **src/test/**: Pre-configured integration tests
 
 ## Tech Stack
 
@@ -129,24 +207,34 @@ bun run cf-typegen
 
 ## Configuration
 
-Service permissions are managed in `src/config.ts.` This allows granular control over which token can access which KV namespace and with what prefix.
+Service permissions are managed in `src/config.ts` and environment variables in `wrangler.jsonc`. See the [Configuration Guide](./docs/CONFIGURATION.md) for detailed information.
+
+**Quick Example**:
 
 ```typescript
-export const registry: KeviRegistry = {
-  "dev-master-admin-321": {
+// src/config.ts
+export const registry: ServiceRegistry = {
+  "dev-service": {
     storage: "TEST_STORAGE",
     role: "admin",
     prefix: "dev",
-    description: "Main development key with 'dev:' prefixing.",
+    description: "Development service with prefix isolation",
     allowedOrigins: ["http://localhost:8787", "http://localhost:3000"],
-  },
-  "mobile-public-read-999": {
-    storage: "KEVI_STORAGE",
-    role: "read-only",
-    description: "Public read-only access for mobile app.",
+    publicKeys: ["public/*"],
   },
 };
 ```
+
+```jsonc
+// wrangler.jsonc
+{
+  "vars": {
+    "TOKEN_abc123...": "dev-service"
+  }
+}
+```
+
+For complete configuration details, see [CONFIGURATION.md](./docs/CONFIGURATION.md).
 
 ## Getting Started
 
