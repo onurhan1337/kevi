@@ -9,7 +9,7 @@ type Variables = {
   service: ServiceDefinition;
   serviceId: ServiceName<typeof registry>;
 };
-const app = new Hono<{ Bindings: Partial<Env>; Variables: Variables }>();
+const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 /**
  * Resolved KV context with type safety.
@@ -37,7 +37,7 @@ type ResolvedKV = {
  * @throws Error if service is not resolved in context
  */
 const getResolvedKV = (
-  c: Context<{ Bindings: Partial<Env>; Variables: Variables }>
+  c: Context<{ Bindings: Env; Variables: Variables }>
 ): ResolvedKV => {
   const service = c.get("service");
   const serviceId = c.get("serviceId");
@@ -46,12 +46,8 @@ const getResolvedKV = (
     throw new Error("Service not resolved in context");
   }
 
-  if (!c.env) {
-    throw new Error("Environment not available");
-  }
-
   const storageKey = service.storage as keyof Env;
-  const kv = c.env[storageKey] as KVNamespace | undefined;
+  const kv = c.env[storageKey] as KVNamespace;
 
   if (!kv) {
     throw new Error(

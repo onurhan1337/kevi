@@ -13,8 +13,7 @@ type Variables = {
   serviceId: ServiceName<typeof registry>;
 };
 
-// Use Partial<Env> to allow undefined bindings on Vercel
-const app = new Hono<{ Bindings: Partial<Env>; Variables: Variables }>();
+const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 app.use("*", logger());
 
