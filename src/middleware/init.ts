@@ -11,16 +11,11 @@ type Variables = {
   serviceId: ServiceName<typeof registry>;
 };
 
-type EnvWithTokens = Env & {
-  API_TOKEN?: string;
-  [key: `TOKEN_${string}`]: string | undefined;
-};
-
 function resolveTokenToServiceId(
   token: string,
-  env: EnvWithTokens
+  env: Env
 ): ServiceName<typeof registry> | undefined {
-  const tokenKey = `TOKEN_${token}` as keyof EnvWithTokens;
+  const tokenKey = `TOKEN_${token}` as keyof Env;
   const serviceId = env[tokenKey];
 
   if (typeof serviceId === "string" && serviceId in registry) {
@@ -31,7 +26,7 @@ function resolveTokenToServiceId(
 }
 
 export const initApp = async (
-  c: Context<{ Bindings: EnvWithTokens; Variables: Variables }>,
+  c: Context<{ Bindings: Env; Variables: Variables }>,
   next: Next
 ) => {
   const token = c.req.header("X-Kevi-Token");
