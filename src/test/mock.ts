@@ -39,5 +39,5 @@ export const mockEnv: Env & {
   KEVI_STORAGE: mockKV,
   TEST_STORAGE: mockKV,
   [`TOKEN_${ADMIN_TOKEN}`]: "dev-service",
-  API_TOKEN: ADMIN_TOKEN,
+  API_TOKEN: `TOKEN_${ADMIN_TOKEN}`,
 };
