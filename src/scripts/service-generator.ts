@@ -17,7 +17,7 @@ if (!validation.success) {
 }
 
 const serviceName = validation.data;
-const rawToken = randomBytes(32).toString("base64");
+const rawToken = randomBytes(32).toString("hex");
 const envKey = `TOKEN_${rawToken}`;
 
 const colors = {
@@ -52,10 +52,12 @@ console.log(
   `${colors.yellow}------------------------------------------------${colors.reset}`
 );
 console.log(`"${serviceName}": {
-  storage: "YOUR_KV_BINDING",
+  storage: "KEVI_STORAGE",
   role: "admin",
   prefix: "${serviceName.split("-")[0]}",
-  description: "Generated service for ${serviceName}"
+  description: "Generated service for ${serviceName}",
+  allowedOrigins: ["*"],
+  publicKeys: ["public/*"]
 },\n`);
 
 console.log(
@@ -65,5 +67,4 @@ console.log(
   `${colors.yellow}------------------------------------------------${colors.reset}`
 );
 console.log(`${colors.cyan}Header:${colors.reset} X-Kevi-Token: ${rawToken}\n`);
-
 console.log(`${colors.yellow}${"=".repeat(40)}${colors.reset}\n`);
