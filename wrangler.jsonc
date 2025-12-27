@@ -6,20 +6,33 @@
   "kv_namespaces": [
     {
       "binding": "KEVI_STORAGE",
-      "id": "", // Add your KV namespace ID here
+      "id": "" // Add your KV namespace ID here
     },
     {
       "binding": "TEST_STORAGE",
-      "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    },
+      "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
   ],
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
-  // Create your own API_TOKEN with "openssl rand -base64 32" command
+  // Identity-First Architecture: Direct Token-to-Service Mapping
+  // Format: TOKEN_[SECRET_VALUE] = "[SERVICE_ID]"
+  // This eliminates JSON parsing and uses native Cloudflare environment mapping.
+  // Tokens are resolved directly to Service IDs, which are then used to look up
+  // operational rules in config.ts (ServiceRegistry).
+  //
+  // Generate tokens with: openssl rand -base64 32
   "vars": {
+    // Legacy admin token (optional, for backward compatibility)
     "API_TOKEN": "",
-  },
+
+    // Identity Mapping: Direct token-to-service mapping
+    // Format: TOKEN_[base64-token] = "[service-id]"
+    // Example: TOKEN_mdK+p90... = "dev-service"
+    // The middleware will look up c.env[`TOKEN_${token}`] to resolve the serviceId
+    "": "dev-service"
+  }
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",

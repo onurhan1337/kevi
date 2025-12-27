@@ -6,7 +6,7 @@ type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 /**
  * Filtered Storage Names:
  * This logic iterates through 'Env' and only picks keys that are actual KVNamespaces.
- * It automatically filters out strings like 'API_TOKEN'.
+ * It automatically filters out strings like 'API_TOKEN' or 'SERVICE_TOKENS'.
  */
 export type KVStorageName = {
   [K in keyof Env]: Env[K] extends KVNamespace ? K : never;
@@ -16,6 +16,7 @@ export type AccessRole = "admin" | "read-only";
 
 /**
  * Service configuration details with full JSDoc support.
+ * This represents the Logic & Policy Layer - operational rules for each service.
  */
 export interface ServiceDefinition {
   /**
@@ -29,7 +30,10 @@ export interface ServiceDefinition {
    */
   readonly role: AccessRole;
   /**
-   * Optional key prefix for logical isolation (e.g., "v1").
+   * Optional key prefix for logical isolation (e.g., "service_a").
+   * Used to ensure multiple services can share the same KV namespace
+   * through strict prefix isolation.
+   * @example "service_a" -> keys stored as "service_a:key_1"
    */
   readonly prefix?: string;
   /**
@@ -45,8 +49,24 @@ export interface ServiceDefinition {
 }
 
 /**
- * KeviRegistry: Map of API Keys to their Service Definitions.
+ * ServiceRegistry: Map of Service Names to their Service Definitions.
+ * This is the Logic & Policy Layer where each service-name maps to operational rules.
+ * 
+ * The Service Name is resolved from the Identity Mapping Layer (vars.SERVICE_TOKENS)
+ * and must be a valid key in this registry for type safety.
+ * 
+ * @example
+ * {
+ *   "service-a": { storage: "KEVI_STORAGE", role: "admin", prefix: "service_a" },
+ *   "service-b": { storage: "KEVI_STORAGE", role: "read-only", prefix: "service_b" }
+ * }
  */
-export type KeviRegistry = Expand<{
-  readonly [apiKey: string]: Expand<ServiceDefinition>;
+export type ServiceRegistry = Expand<{
+  readonly [serviceName: string]: Expand<ServiceDefinition>;
 }>;
+
+/**
+ * Service Name type extracted from ServiceRegistry keys.
+ * Used to ensure type safety when resolving tokens to service names.
+ */
+export type ServiceName<T extends ServiceRegistry> = keyof T & string;
